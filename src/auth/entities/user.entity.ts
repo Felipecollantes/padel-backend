@@ -1,3 +1,4 @@
+import { Exclude, Transform } from 'class-transformer';
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -29,7 +30,8 @@ export class User {
   })
   isActive: boolean;
 
-  @Column('text', {
+  @Exclude()
+  @Column('json', {
     default: ['user'],
   })
   roles: string[];
@@ -37,6 +39,11 @@ export class User {
   @BeforeInsert()
   checkFieldsBeforeInsert() {
     this.email = this.email.toLowerCase().trim();
+  }
+
+  @Transform(({ value }) => JSON.parse(JSON.stringify(value)))
+  get rolesArray(): string[] {
+    return this.roles;
   }
 
   @BeforeUpdate()
