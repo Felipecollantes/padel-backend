@@ -13,6 +13,10 @@ import { GetUser } from './decorators/get-user.decorator';
 import { User } from './entities/user.entity';
 import { RawHeaders } from 'src/shared/decorators/get-headers.decorators';
 import { IncomingHttpHeaders } from 'http';
+import { UserRoleGuard } from './guards/user-role/user-role.guard';
+import { RoleProtected } from './decorators/role-protected.decorator';
+import { ValidRoles } from './interfaces/valid-roles.interface';
+import { Auth } from './decorators/auth.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -46,18 +50,22 @@ export class AuthController {
     };
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.authService.findOne(+id);
-  // }
+  @Get('private2')
+  @RoleProtected(ValidRoles.superUser, ValidRoles.admin)
+  @UseGuards(AuthGuard(), UserRoleGuard)
+  testingPrivateRoute2(@GetUser() user: User) {
+    return {
+      ok: true,
+      user,
+    };
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-  //   return this.authService.update(+id, updateAuthDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.authService.remove(+id);
-  // }
+  @Get('private3')
+  @Auth(ValidRoles.admin)
+  testingPrivateRoute3(@GetUser() user: User) {
+    return {
+      ok: true,
+      user,
+    };
+  }
 }
