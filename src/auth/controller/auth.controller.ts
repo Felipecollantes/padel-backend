@@ -6,7 +6,7 @@ import {
   // UseGuards,
   // Headers,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { AuthService } from '../services/auth.service';
 // import { AuthGuard } from '@nestjs/passport';
 // import { GetUser } from './decorators/get-user.decorator';
 // import { RawHeaders } from 'src/shared/decorators/get-headers.decorators';
@@ -16,7 +16,7 @@ import { AuthService } from './auth.service';
 // import { ValidRoles } from './interfaces/valid-roles.interface';
 // import { Auth } from './decorators/auth.decorator';
 // import { User } from 'src/users/entities/user.entity';
-import { LoginUserDto } from './dto/login-user.dto';
+import { LoginUserDto } from '../dto/login-user.dto';
 
 @Controller('auth')
 export class AuthController {
