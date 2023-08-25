@@ -39,6 +39,12 @@ export class User {
   @JoinTable()
   friendship: User[];
 
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  lastLogin: Date;
+
   @Exclude()
   @Column('json', {
     default: ['user'],

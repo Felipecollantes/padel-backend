@@ -32,6 +32,7 @@ export class UsersService {
       const user = this.userRepository.create({
         ...userDetails,
         password: bcrypt.hashSync(password, 10),
+        createdAt: new Date().toISOString(),
         friendship: friendship.map((user) => user),
       });
       await this.userRepository.save(user);
