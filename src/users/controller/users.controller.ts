@@ -13,6 +13,7 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { PaginationDto } from 'src/shared/dtos/pagination.dto';
 import { UsersService } from '../services/users.service';
+import { CreateFriendshipDto } from '../dto/create-friendship.dto';
 
 @Controller('users')
 export class UsersController {
@@ -23,14 +24,24 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @Post('friendship')
+  createFriendship(@Body() createFriendshipDto: CreateFriendshipDto) {
+    return this.usersService.createFriendship(createFriendshipDto);
+  }
+
   @Get()
   findAll(@Query() paginationDto: PaginationDto) {
     return this.usersService.findAll(paginationDto);
   }
 
-  @Get(':param')
+  @Get('user/:param')
   findOne(@Param('param') param: string) {
     return this.usersService.findOne(param);
+  }
+
+  @Get(':param')
+  findUsers(@Param('param') param: string) {
+    return this.usersService.findUsers(param);
   }
 
   @Patch(':id')

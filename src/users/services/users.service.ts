@@ -15,6 +15,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '../entities/user.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { CreateFriendshipDto } from '../dto/create-friendship.dto';
 
 @Injectable()
 export class UsersService {
@@ -74,6 +75,23 @@ export class UsersService {
     return user;
   }
 
+  async findUsers(param: string) {
+    let users: User[];
+
+    if (isUUID(param)) {
+      users = await this.userRepository.find({
+        where: { id: param },
+        relations: { friendship: true },
+      });
+    } else {
+      users = await this.findByName(param);
+    }
+
+    if (users.length === 0)
+      throw new NotFoundException(`No users found matching ${param}`);
+    return users;
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.userRepository.preload({
       id: id,
@@ -84,6 +102,35 @@ export class UsersService {
     try {
       await this.userRepository.save(user);
       return user;
+    } catch (err) {
+      this.handleExceptions(err);
+    }
+  }
+
+  async createFriendship(createFriendshipDto: CreateFriendshipDto) {
+    try {
+      const [user, friend] = await Promise.all([
+        this.findOne(createFriendshipDto.idUser),
+        this.findOne(createFriendshipDto.idFriendship),
+      ]);
+
+      console.log('user', user);
+      console.log('friend', friend);
+
+      const updateUser = { ...user, friendship: [...user.friendship, friend] };
+      const updateFriend = {
+        ...friend,
+        friendship: [...friend.friendship, user],
+      };
+
+      console.log('updateUser', updateUser);
+      console.log('updateFriend', updateFriend);
+
+      await Promise.all([
+        this.update(updateUser.id, updateUser),
+        this.update(updateFriend.id, updateFriend),
+      ]);
+      return updateUser;
     } catch (err) {
       this.handleExceptions(err);
     }
@@ -114,31 +161,22 @@ export class UsersService {
     // We handle the possibility of searching with spaces and in upper or lower case
     return await queryBuilder
       .leftJoinAndSelect('user.friendship', 'friendship')
-      // .leftJoinAndSelect('user.comments', 'comments')
-      .where('UPPER(user.name) =:name', {
-        name: param.toUpperCase(),
+      .where('UPPER(user.name) ILIKE :name', {
+        name: `%${param.toUpperCase()}%`,
       })
       .getOne();
   }
 
-  // async insertNewFriendShip(user: User) {
-  //   if (user && user.friendship.length > 0) {
-  //     for (const friend of user.friendship) {
-  //       try {
-  //         let userFriend = await this.findOne(friend.id);
-  //         // if (!userFriend)
-  //         //   throw new NotFoundException(`User with ${friend.id} not found`);
-  //         userFriend = {
-  //           ...userFriend,
-  //           friendship: [...userFriend.friendship, user],
-  //         };
-  //         await this.update(friend.id, userFriend);
-  //       } catch (e) {
-  //         this.logger.error(e);
-  //       }
-  //     }
-  //   }
-  // }
+  async findByName(param: string): Promise<User[]> {
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
+
+    return await queryBuilder
+      .leftJoinAndSelect('user.friendship', 'friendship')
+      .where('UPPER(user.name) ILIKE :name', {
+        name: `%${param.toUpperCase()}%`,
+      })
+      .getMany();
+  }
 
   private getJwtToken(payload: JwtPayload) {
     return this.jwtService.sign(payload);
@@ -148,7 +186,6 @@ export class UsersService {
     if (error.code === '23505') {
       throw new BadRequestException(error.detail);
     }
-    console.log(error);
     throw new InternalServerErrorException('Please check server log');
   }
 }

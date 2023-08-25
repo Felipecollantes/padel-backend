@@ -20,12 +20,15 @@ export class User {
   email: string;
 
   @Column('text', {
-    select: false,
+    select: true,
   })
   password: string;
 
   @Column('text')
-  fullName: string;
+  name: string;
+
+  @Column('text')
+  surname: string;
 
   @Column('bool', {
     default: true,
