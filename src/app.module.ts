@@ -4,6 +4,7 @@ import * as process from 'process';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { LeagueModule } from './league/league.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { UsersModule } from './users/users.module';
     }),
     AuthModule,
     UsersModule,
+    LeagueModule,
   ],
   controllers: [],
   providers: [],
