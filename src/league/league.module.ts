@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { LeagueService } from './league.service';
-import { LeagueController } from './league.controller';
+import { LeagueService } from './services/league.service';
+import { LeagueController } from './controller/league.controller';
 
 @Module({
   controllers: [LeagueController],

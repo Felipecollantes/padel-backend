@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateLeagueDto } from './dto/create-league.dto';
-import { UpdateLeagueDto } from './dto/update-league.dto';
+import { CreateLeagueDto } from '../dto/create-league.dto';
+import { UpdateLeagueDto } from '../dto/update-league.dto';
 
 @Injectable()
 export class LeagueService {
