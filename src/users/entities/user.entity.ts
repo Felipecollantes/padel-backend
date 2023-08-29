@@ -1,4 +1,5 @@
 import { Exclude, Transform } from 'class-transformer';
+import { League } from 'src/league/entities/league.entity';
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -44,6 +45,12 @@ export class User {
 
   @Column({ type: 'timestamp', nullable: true })
   lastLogin: Date;
+
+  @ManyToMany(() => League, (league) => league.participants)
+  leagues: League[];
+
+  @Column({ default: 1200 })
+  elo: number;
 
   @Exclude()
   @Column('json', {

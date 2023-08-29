@@ -37,7 +37,6 @@ export class UsersService {
       });
       await this.userRepository.save(user);
       delete user.password;
-      // await this.insertNewFriendShip(user);
 
       return {
         ...user,
@@ -94,15 +93,37 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    const user = await this.userRepository.preload({
-      id: id,
-      ...updateUserDto,
-    });
-    if (!user) throw new NotFoundException(`User with id: ${id} not found`);
+    const {
+      password,
+      currentPassword,
+      updateActive,
+      updateElo,
+      updateRoles,
+      ...userDetails
+    } = updateUserDto;
+    const user = await this.findOne(id);
+    if (password && currentPassword) {
+      const isCurrentPasswordValid = await bcrypt.compare(
+        currentPassword,
+        user.password,
+      );
 
+      if (!isCurrentPasswordValid) {
+        throw new BadRequestException('Current password is incorrect');
+      }
+    }
+    const userUpdate = await this.userRepository.preload({
+      id: id,
+      password: password ? bcrypt.hashSync(password, 10) : user.password,
+      isActive: updateActive,
+      elo: updateElo,
+      roles: updateRoles,
+      ...userDetails,
+    });
     try {
-      await this.userRepository.save(user);
-      return user;
+      await this.userRepository.save(userUpdate);
+
+      return userUpdate;
     } catch (err) {
       this.handleExceptions(err);
     }
@@ -137,9 +158,23 @@ export class UsersService {
     }
   }
 
+  // async remove(id: string) {
+  //   const user = await this.findOne(id);
+  //   await this.userRepository.remove(user);
+  // }
+
   async remove(id: string) {
-    const user = await this.findOne(id);
-    await this.userRepository.remove(user);
+    const user = await this.userRepository.preload({
+      id: id,
+      isActive: false,
+    });
+    if (!user) throw new NotFoundException(`User with id: ${id} not found`);
+    try {
+      await this.userRepository.save(user);
+      return user;
+    } catch (err) {
+      this.handleExceptions(err);
+    }
   }
 
   private handleExceptions(exceptions: any) {
@@ -176,6 +211,13 @@ export class UsersService {
       .where('UPPER(user.name) ILIKE :name', {
         name: `%${param.toUpperCase()}%`,
       })
+      .getMany();
+  }
+
+  async findUsersByIds(ids: string[]) {
+    return this.userRepository
+      .createQueryBuilder('item')
+      .where('item.id IN (:...ids)', { ids })
       .getMany();
   }
 
