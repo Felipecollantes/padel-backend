@@ -136,17 +136,11 @@ export class UsersService {
         this.findOne(createFriendshipDto.idFriendship),
       ]);
 
-      console.log('user', user);
-      console.log('friend', friend);
-
       const updateUser = { ...user, friendship: [...user.friendship, friend] };
       const updateFriend = {
         ...friend,
         friendship: [...friend.friendship, user],
       };
-
-      console.log('updateUser', updateUser);
-      console.log('updateFriend', updateFriend);
 
       await Promise.all([
         this.update(updateUser.id, updateUser),
@@ -157,11 +151,6 @@ export class UsersService {
       this.handleExceptions(err);
     }
   }
-
-  // async remove(id: string) {
-  //   const user = await this.findOne(id);
-  //   await this.userRepository.remove(user);
-  // }
 
   async remove(id: string) {
     const user = await this.userRepository.preload({
