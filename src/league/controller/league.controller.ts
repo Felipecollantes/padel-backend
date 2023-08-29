@@ -6,12 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { LeagueService } from '../services/league.service';
 import { CreateLeagueDto } from '../dto/create-league.dto';
 import { UpdateLeagueDto } from '../dto/update-league.dto';
 
-@Controller('league')
+@Controller('leagues')
 export class LeagueController {
   constructor(private readonly leagueService: LeagueService) {}
 
@@ -25,18 +26,26 @@ export class LeagueController {
     return this.leagueService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.leagueService.findOne(+id);
+  @Get('league/:param')
+  findOne(@Param('param') param: string) {
+    return this.leagueService.findOne(param);
+  }
+
+  @Get(':param')
+  findLeagues(@Param('param') param: string) {
+    return this.leagueService.findLeagues(param);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLeagueDto: UpdateLeagueDto) {
-    return this.leagueService.update(+id, updateLeagueDto);
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateLeagueDto: UpdateLeagueDto,
+  ) {
+    return this.leagueService.update(id, updateLeagueDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.leagueService.remove(+id);
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.leagueService.remove(id);
   }
 }
