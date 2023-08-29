@@ -11,8 +11,10 @@ import {
 import { LeagueService } from '../services/league.service';
 import { CreateLeagueDto } from '../dto/create-league.dto';
 import { UpdateLeagueDto } from '../dto/update-league.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
 
 @Controller('leagues')
+@Auth()
 export class LeagueController {
   constructor(private readonly leagueService: LeagueService) {}
 
