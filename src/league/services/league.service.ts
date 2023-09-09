@@ -10,6 +10,7 @@ import { User } from 'src/users/entities/user.entity';
 import { League } from '../entities/league.entity';
 import { In, Repository } from 'typeorm';
 import { isUUID } from 'class-validator';
+import { UserLeague } from '../entities/leagues_users.entity';
 
 @Injectable()
 export class LeagueService {
@@ -18,6 +19,8 @@ export class LeagueService {
     private readonly leagueRepository: Repository<League>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(UserLeague)
+    private readonly userLeagueRepository: Repository<UserLeague>,
   ) {}
 
   async create(createLeagueDto: CreateLeagueDto) {
@@ -68,7 +71,46 @@ export class LeagueService {
     }
 
     if (!league) throw new NotFoundException(`League with ${param} not found`);
-    return league;
+
+    const userLeague = await this.userLeagueRepository.find({
+      where: { leaguesId: league.id },
+      relations: { user: true },
+    });
+    // console.log(userLeague);
+    const testt = {
+      ...league,
+      participants: this.mapAll(userLeague),
+
+      // participants: userLeague.map((userLeague) => ({
+      //   // Mapeo de los campos necesarios del userLeague
+      //   totalMatches: userLeague.totalMatches,
+      //   matchesWon: userLeague.matchesWon,
+      //   user: {
+      //     email: userLeague.users.email,
+      //     name: userLeague.user.name,
+      //     surname: userLeague.user.surname,
+      //     isActive: userLeague.user.isActive,
+      //     // Otros campos de usuario que necesitas
+      //   },
+      // })),
+    };
+    console.log('testss', testt);
+    return testt;
+  }
+
+  mapAll(userLeague: UserLeague[]) {
+    return userLeague.map((userLeague) => ({
+      usersId: userLeague.usersId,
+      totalMatches: userLeague.totalMatches,
+      matchesWon: userLeague.matchesWon,
+      matchesTied: userLeague.matchesTied,
+      matchesLost: userLeague.matchesLost,
+      points: userLeague.points,
+      email: userLeague.user.email,
+      name: userLeague.user.name,
+      surname: userLeague.user.surname,
+      isActive: userLeague.user.isActive,
+    }));
   }
 
   async findLeagues(param: string) {
