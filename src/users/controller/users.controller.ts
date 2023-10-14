@@ -16,7 +16,10 @@ import { UsersService } from '../services/users.service';
 import { CreateFriendshipDto } from '../dto/create-friendship.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { ValidRoles } from 'src/auth/interfaces/valid-roles.interface';
+import { ApiTags, ApiParam, ApiBearerAuth } from '@nestjs/swagger'
 
+@ApiTags('Users')
+@ApiBearerAuth()
 @Controller('users')
 @Auth()
 export class UsersController {
@@ -37,16 +40,19 @@ export class UsersController {
     return this.usersService.findAll(paginationDto);
   }
 
+  @ApiParam({name: 'param'})
   @Get('user/:param')
   findOne(@Param('param') param: string) {
     return this.usersService.findOne(param);
   }
 
+  @ApiParam({name: 'param'})
   @Get(':param')
   findUsers(@Param('param') param: string) {
     return this.usersService.findUsers(param);
   }
 
+  @ApiParam({name: 'id'})
   @Patch(':id')
   update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -55,6 +61,7 @@ export class UsersController {
     return this.usersService.update(id, updateUserDto);
   }
 
+  @ApiParam({name: 'id'})
   @Delete(':id')
   @Auth(ValidRoles.admin)
   remove(@Param('id', ParseUUIDPipe) id: string) {
