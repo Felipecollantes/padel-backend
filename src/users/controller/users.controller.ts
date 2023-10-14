@@ -21,7 +21,6 @@ import { ApiTags, ApiParam, ApiBearerAuth } from '@nestjs/swagger'
 @ApiTags('Users')
 @ApiBearerAuth()
 @Controller('users')
-@Auth()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -30,28 +29,33 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @Auth()
   @Post('friendship')
   createFriendship(@Body() createFriendshipDto: CreateFriendshipDto) {
     return this.usersService.createFriendship(createFriendshipDto);
   }
 
+  @Auth()
   @Get()
   findAll(@Query() paginationDto: PaginationDto) {
     return this.usersService.findAll(paginationDto);
   }
 
+  @Auth()
   @ApiParam({name: 'param'})
   @Get('user/:param')
   findOne(@Param('param') param: string) {
     return this.usersService.findOne(param);
   }
 
+  @Auth()
   @ApiParam({name: 'param'})
   @Get(':param')
   findUsers(@Param('param') param: string) {
     return this.usersService.findUsers(param);
   }
 
+  @Auth()
   @ApiParam({name: 'id'})
   @Patch(':id')
   update(
@@ -61,6 +65,7 @@ export class UsersController {
     return this.usersService.update(id, updateUserDto);
   }
 
+  @Auth()
   @ApiParam({name: 'id'})
   @Delete(':id')
   @Auth(ValidRoles.admin)
