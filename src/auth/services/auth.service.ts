@@ -33,7 +33,7 @@ export class AuthService {
     await this.userRepository.update(user.id, {
       lastLogin: new Date().toISOString(),
     });
-
+    delete user.password;
     return {
       ...user,
       token: this.getJwtToken({ id: user.id }),

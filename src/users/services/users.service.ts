@@ -28,12 +28,12 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     try {
-      const { friendship = [], password, ...userDetails } = createUserDto;
+      const {  password, ...userDetails } = createUserDto;
       const user = this.userRepository.create({
         ...userDetails,
         password: bcrypt.hashSync(password, 10),
         createdAt: new Date().toISOString(),
-        friendship: friendship.map((user) => user),
+        friendship: [],
       });
       await this.userRepository.save(user);
       delete user.password;
@@ -52,9 +52,11 @@ export class UsersService {
     return this.userRepository.find({
       take: limit,
       skip: offset,
+      select:['id', 'email', 'name', 'surname', 'isActive', 'createdAt', 'lastLogin', 'elo', 'roles'],
       relations: { friendship: true },
     });
   }
+
 
   /**
    * Method that returns a user searched for by an id or by a name
@@ -65,6 +67,7 @@ export class UsersService {
     if (isUUID(param)) {
       user = await this.userRepository.findOne({
         where: { id: param },
+        select:['id', 'email', 'name', 'surname', 'isActive', 'createdAt', 'lastLogin', 'elo', 'roles'],
         relations: { friendship: true },
       });
     } else {
@@ -72,6 +75,7 @@ export class UsersService {
     }
 
     if (!user) throw new NotFoundException(`User with ${param} not found`);
+    delete user.password;
     return user;
   }
 
@@ -81,6 +85,7 @@ export class UsersService {
     if (isUUID(param)) {
       users = await this.userRepository.find({
         where: { id: param },
+        select:['id', 'email', 'name', 'surname', 'isActive', 'createdAt', 'lastLogin', 'elo', 'roles'],
         relations: { friendship: true },
       });
     } else {
@@ -101,7 +106,10 @@ export class UsersService {
       updateRoles,
       ...userDetails
     } = updateUserDto;
-    const user = await this.findOne(id);
+    const  user = await this.userRepository.findOne({
+      where: { id: id },
+      relations: { friendship: true },
+    });
     if (password && currentPassword) {
       const isCurrentPasswordValid = await bcrypt.compare(
         currentPassword,
@@ -122,7 +130,6 @@ export class UsersService {
     });
     try {
       await this.userRepository.save(userUpdate);
-
       return userUpdate;
     } catch (err) {
       this.handleExceptions(err);
@@ -185,6 +192,17 @@ export class UsersService {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
     // We handle the possibility of searching with spaces and in upper or lower case
     return await queryBuilder
+      .select([
+        'user.id',
+        'user.email',
+        'user.name',
+        'user.surname',
+        'user.isActive',
+        'user.createdAt',
+        'user.lastLogin',
+        'user.elo',
+        'user.roles'
+      ])
       .leftJoinAndSelect('user.friendship', 'friendship')
       .where('UPPER(user.name) ILIKE :name', {
         name: `%${param.toUpperCase()}%`,
@@ -196,17 +214,21 @@ export class UsersService {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
 
     return await queryBuilder
+      .select([
+        'user.id',
+        'user.email',
+        'user.name',
+        'user.surname',
+        'user.isActive',
+        'user.createdAt',
+        'user.lastLogin',
+        'user.elo',
+        'user.roles'
+      ])
       .leftJoinAndSelect('user.friendship', 'friendship')
       .where('UPPER(user.name) ILIKE :name', {
         name: `%${param.toUpperCase()}%`,
       })
-      .getMany();
-  }
-
-  async findUsersByIds(ids: string[]) {
-    return this.userRepository
-      .createQueryBuilder('item')
-      .where('item.id IN (:...ids)', { ids })
       .getMany();
   }
 
