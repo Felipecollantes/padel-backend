@@ -48,11 +48,4 @@ export class CreateUserDto {
   @MinLength(1)
   surname: string;
 
-  @ApiProperty({
-    default: [],
-    description: 'Friendship empty'
-  })
-  @IsArray()
-  @IsOptional()
-  friendship: User[];
 }
