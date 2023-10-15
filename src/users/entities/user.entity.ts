@@ -9,6 +9,7 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Match } from '../../matches/entities/match.entity';
 
 @Entity('users')
 export class User {
@@ -48,6 +49,12 @@ export class User {
 
   @ManyToMany(() => League, (league) => league.participants)
   leagues: League[];
+
+  @ManyToMany(() => Match, (match) => match.teamOnePlayers)
+  teamOneMatches: Match[];
+
+  @ManyToMany(() => Match, (match) => match.teamTwoPlayers)
+  teamTwoMatches: Match[];
 
   @Column({ default: 1200 })
   elo: number;

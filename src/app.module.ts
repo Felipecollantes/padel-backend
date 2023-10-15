@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { LeagueModule } from './league/league.module';
+import { MatchesModule } from './matches/matches.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { LeagueModule } from './league/league.module';
     AuthModule,
     UsersModule,
     LeagueModule,
+    MatchesModule
   ],
   controllers: [],
   providers: [],

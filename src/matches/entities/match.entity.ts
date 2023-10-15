@@ -1,5 +1,4 @@
-import { League } from 'src/league/entities/league.entity';
-import { User } from 'src/users/entities/user.entity';
+
 import {
   Column,
   Entity,
@@ -8,6 +7,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { League } from '../../league/entities/league.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('matches')
 export class Match {
