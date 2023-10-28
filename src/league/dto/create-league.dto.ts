@@ -5,44 +5,23 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateLeagueDto {
-  @ApiProperty()
-  @IsString()
+
+  @ApiProperty({
+    description: 'The name of the league.',
+    example: 'Champions League'
+  })
+  @IsString({ message: 'El nombre es obligatorio.' })
   name: string;
 
-  @ApiProperty()
-  @IsBoolean()
-  @IsOptional()
-  isActive?: boolean;
-
-  @ApiProperty()
-  @IsNumber()
-  @IsOptional()
-  totalMatches?: number;
-
-  @ApiProperty()
-  @IsNumber()
-  @IsOptional()
-  matchesWon?: number;
-
-  @ApiProperty()
-  @IsNumber()
-  @IsOptional()
-  matchesTied?: number;
-
-  @ApiProperty()
-  @IsNumber()
-  @IsOptional()
-  matchesLost?: number;
-
-  @ApiProperty()
-  @IsNumber()
-  @IsOptional()
-  points?: number;
-
-  @ApiProperty()
+  @ApiProperty({
+    description: 'List of participants in the league.',
+    example: [],
+    type: [String],
+    required: false
+  })
   @IsArray()
   @IsOptional()
   participants?: string[];

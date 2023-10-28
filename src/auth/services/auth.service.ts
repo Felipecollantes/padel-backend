@@ -6,6 +6,7 @@ import { JwtPayload } from '../interfaces/jwt.payload.interface';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/entities/user.entity';
 import { LoginUserDto } from '../dto/login-user.dto';
+import { LoginUserResponseDto } from '../dto/response-login-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +16,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(loginUserDto: LoginUserDto) {
+  async login(loginUserDto: LoginUserDto): Promise<LoginUserResponseDto> {
     const { password, email } = loginUserDto;
 
     const user = await this.userRepository.findOne({
@@ -40,7 +41,7 @@ export class AuthService {
     };
   }
 
-  private getJwtToken(payload: JwtPayload) {
+  private getJwtToken(payload: JwtPayload): string {
     return this.jwtService.sign(payload);
   }
 }
