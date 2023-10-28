@@ -11,7 +11,10 @@ import {
 import { MatchesService } from '../services/matches.service';
 import { CreateMatchDto } from '../dto/create-match.dto';
 import { UpdateMatchDto } from '../dto/update-match.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Matches')
+@ApiBearerAuth()
 @Controller('matches')
 export class MatchesController {
   constructor(private readonly matchesService: MatchesService) {}
@@ -26,7 +29,7 @@ export class MatchesController {
     return this.matchesService.findAll();
   }
 
-  @Get('match/:id')
+  @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.matchesService.findOne(id);
   }

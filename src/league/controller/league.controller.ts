@@ -12,8 +12,9 @@ import { LeagueService } from '../services/league.service';
 import { CreateLeagueDto } from '../dto/create-league.dto';
 import { UpdateLeagueDto } from '../dto/update-league.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
-import { ApiTags, ApiParam } from '@nestjs/swagger'
+import { ApiTags, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 @ApiTags('Leagues')
+@ApiBearerAuth()
 @Controller('leagues')
 @Auth()
 export class LeagueController {
@@ -29,9 +30,9 @@ export class LeagueController {
     return this.leagueService.findAll();
   }
 
-  @ApiParam({name: 'param'})
-  @Get('league/:param')
-  findOne(@Param('param') param: string) {
+  @ApiParam({name: 'id'})
+  @Get('league/:id')
+  findOne(@Param('id') param: string) {
     return this.leagueService.findOne(param);
   }
 
