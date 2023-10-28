@@ -8,10 +8,11 @@ import { SharedModule } from 'src/shared/shared.module';
 import { UserLeague } from './entities/leagues_users.entity';
 import { LeagueUserController } from './controller/leagues_users.controller';
 import { Match } from '../matches/entities/match.entity';
+import { LeagueUserService } from './services/league_user/league_user.service';
 
 @Module({
   controllers: [LeagueController, LeagueUserController],
-  providers: [LeagueService],
+  providers: [LeagueService, LeagueUserService],
   imports: [TypeOrmModule.forFeature([League, User, UserLeague, Match]), SharedModule],
 })
 export class LeagueModule {}
