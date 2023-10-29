@@ -17,7 +17,7 @@ import {
   leagueApiResponses,
   leagueDeleteApiResponses,
   leaguesApiResponses,
-} from '../../utils/swaggerResponses/league/response';
+} from '../../utils/swaggerResponses/league/responseLeague';
 import { ApiResponses } from '../../utils/swaggerResponses/swaggerDecoratorHelper';
 import { LeagueResponseDto } from '../dto/response-league.dto';
 import { League } from '../entities/league.entity';

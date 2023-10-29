@@ -1,7 +1,7 @@
 import { LeagueResponseDto } from '../../../league/dto/response-league.dto';
 
 export const leagueCreatedResponse = {
-  status: 201,
+  status: 200,
   description: 'The league has been successfully created.',
   type: LeagueResponseDto,
   example: {
@@ -19,7 +19,7 @@ export const leagueCreatedResponse = {
 };
 
 export const leaguesResponse = {
-  status: 201,
+  status: 200,
   description: 'The league has been successfully created.',
   isArray: true,
   type: LeagueResponseDto,
@@ -81,7 +81,7 @@ export const leaguesResponse = {
 
 export const leagueDeleteResponse = {
   status: 201,
-  description: 'The league has been successfully created.',
+  description: 'The league has been successfully deactivate.',
   type: LeagueResponseDto,
   example: {
     name: "Champions League",
