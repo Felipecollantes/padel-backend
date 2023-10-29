@@ -1,7 +1,7 @@
 import { IsArray, IsBoolean, IsDate, IsNumber, IsString, IsUUID } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '../../users/entities/user.entity';
+import { LeagueUsersResponseDto } from './response-league_users.dto';
 
 export class LeagueResponseDto {
 
@@ -35,7 +35,7 @@ export class LeagueResponseDto {
 
   @ApiProperty({ description: 'List of participants in the league.', type: [String], example: [] })
   @IsArray()
-  participants: User[];
+  participants: LeagueUsersResponseDto[];
 
   @ApiProperty({ description: 'The unique ID of the league.', example: 'fb00f78d-a930-45b9-b810-9f12f7ea6596' })
   @IsUUID('4')
