@@ -12,13 +12,16 @@ import { LeagueService } from '../services/league.service';
 import { CreateLeagueDto } from '../dto/create-league.dto';
 import { UpdateLeagueDto } from '../dto/update-league.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
-import { ApiTags, ApiParam, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import {
-  createLeagueApiResponses,
+  leagueApiResponses,
+  leagueDeleteApiResponses,
   leaguesApiResponses,
 } from '../../utils/swaggerResponses/league/response';
 import { ApiResponses } from '../../utils/swaggerResponses/swaggerDecoratorHelper';
 import { LeagueResponseDto } from '../dto/response-league.dto';
+import { League } from '../entities/league.entity';
+
 @ApiTags('Leagues')
 @ApiBearerAuth()
 @Controller('leagues')
@@ -27,8 +30,8 @@ export class LeagueController {
   constructor(private readonly leagueService: LeagueService) {}
 
   @Post()
-  @ApiResponses(createLeagueApiResponses)
-  create(@Body() createLeagueDto: CreateLeagueDto): Promise<LeagueResponseDto> {
+  @ApiResponses(leagueApiResponses)
+  create(@Body() createLeagueDto: CreateLeagueDto) {
     return this.leagueService.create(createLeagueDto);
   }
 
@@ -38,20 +41,23 @@ export class LeagueController {
     return this.leagueService.findAll();
   }
 
-  @ApiParam({name: 'id'})
-  @Get('league/:id')
-  findOne(@Param('id') param: string) {
+  @Get('league/:param')
+  @ApiResponses(leagueApiResponses)
+  @ApiParam({name: 'param'})
+  findOne(@Param('param') param: string) {
     return this.leagueService.findOne(param);
   }
 
-  @ApiParam({name: 'param'})
-  @Get(':param')
-  findLeagues(@Param('param') param: string): Promise<LeagueResponseDto[]> {
-    return this.leagueService.findLeagues(param);
+  @Get(':name')
+  @ApiResponses(leaguesApiResponses)
+  @ApiParam({name: 'name'})
+  findLeagues(@Param('name') name: string): Promise<LeagueResponseDto[]> {
+    return this.leagueService.findLeagues(name);
   }
 
-  @ApiParam({name: 'id'})
   @Patch(':id')
+  @ApiResponses(leagueApiResponses)
+  @ApiParam({name: 'id'})
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateLeagueDto: UpdateLeagueDto,
@@ -59,9 +65,10 @@ export class LeagueController {
     return this.leagueService.update(id, updateLeagueDto);
   }
 
-  @ApiParam({name: 'id'})
   @Delete(':id')
-  remove(@Param('id', ParseUUIDPipe) id: string): Promise<LeagueResponseDto> {
+  @ApiResponses(leagueDeleteApiResponses)
+  @ApiParam({name: 'id'})
+  remove(@Param('id', ParseUUIDPipe) id: string): Promise<League> {
     return this.leagueService.remove(id);
   }
 }
