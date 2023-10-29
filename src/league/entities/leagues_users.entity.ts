@@ -38,4 +38,7 @@ export class UserLeague {
 
   @Column({ default: 0 })
   points: number;
+
+  @Column({ default: true })
+  isActive: boolean;
 }

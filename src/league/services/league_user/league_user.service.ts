@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserLeague } from '../../entities/leagues_users.entity';
 import { Repository } from 'typeorm';
 import { LeagueUsersResponseDto } from '../../dto/response-league_users.dto';
+import { League } from '../../entities/league.entity';
 
 @Injectable()
 export class LeagueUserService {
@@ -20,6 +21,20 @@ export class LeagueUserService {
     });
 
     return this.mapAll(usersLeague)
+  }
+
+  async remove(leaguesId: string, usersId: string): Promise<UserLeague> {
+    const userLeague: UserLeague = await this.userLeagueRepository.findOne(
+      { where: { usersId: usersId, leaguesId: leaguesId } }
+    );
+
+    if (!userLeague) {
+      throw new NotFoundException('Participation not found');
+    }
+
+    userLeague.isActive = false;
+    await this.userLeagueRepository.save(userLeague);
+    return userLeague
   }
 
   mapAll(userLeague: UserLeague[]): LeagueUsersResponseDto[] {
