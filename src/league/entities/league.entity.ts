@@ -4,10 +4,10 @@ import {
   Column,
   Entity,
   JoinTable,
-  ManyToMany, OneToMany,
+  ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
 
 @Entity('leagues')
 export class League {

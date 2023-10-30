@@ -2,6 +2,7 @@ import { IsArray, IsBoolean, IsDate, IsNumber, IsString, IsUUID } from 'class-va
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { LeagueUsersResponseDto } from './response-league_users.dto';
+import { Match } from '../../matches/entities/match.entity';
 
 export class LeagueResponseDto {
 
@@ -45,4 +46,8 @@ export class LeagueResponseDto {
   @Type(() => Date)
   @IsDate()
   createdAt: Date;
+
+  @ApiProperty({ description: 'List of matches in the league.', type: [String], example: [] })
+  @IsArray()
+  matches: Match[];
 }

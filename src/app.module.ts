@@ -23,7 +23,7 @@ import { MatchesModule } from './matches/matches.module';
     AuthModule,
     UsersModule,
     LeagueModule,
-    MatchesModule
+    MatchesModule,
   ],
   controllers: [],
   providers: [],

@@ -6,12 +6,13 @@ import {
   Patch,
   Param,
   Delete,
-  ParseUUIDPipe,
+  ParseUUIDPipe, HttpCode,
 } from '@nestjs/common';
 import { MatchesService } from '../services/matches.service';
 import { CreateMatchDto } from '../dto/create-match.dto';
 import { UpdateMatchDto } from '../dto/update-match.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { MatchResponseDto } from '../dto/response-match.dto';
 
 @ApiTags('Matches')
 @ApiBearerAuth()
@@ -20,17 +21,17 @@ export class MatchesController {
   constructor(private readonly matchesService: MatchesService) {}
 
   @Post()
-  create(@Body() createMatchDto: CreateMatchDto) {
+  create(@Body() createMatchDto: CreateMatchDto): Promise<MatchResponseDto> {
     return this.matchesService.create(createMatchDto);
   }
 
   @Get()
-  findAll() {
+  findAll(): Promise<MatchResponseDto[]> {
     return this.matchesService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
+  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<MatchResponseDto> {
     return this.matchesService.findOne(id);
   }
 
@@ -38,12 +39,13 @@ export class MatchesController {
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateMatchDto: UpdateMatchDto,
-  ) {
+  ): Promise<MatchResponseDto> {
     return this.matchesService.update(id, updateMatchDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.matchesService.remove(+id);
+  @HttpCode(204)
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.matchesService.remove(id);
   }
 }

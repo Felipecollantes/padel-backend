@@ -1,12 +1,11 @@
 import {
   IsArray,
-  IsBoolean,
   IsDate,
-  IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class CreateMatchDto {
   @ApiProperty({
@@ -17,72 +16,32 @@ export class CreateMatchDto {
   leagueId: string;
 
   @ApiProperty({
-    default: '6dc29adb-517a-4a2d-ae36-0b96a4def775',
+    default: '[' +
+      '"6dc29adb-517a-4a2d-ae36-0b96a4def775",' +
+      '"5yu80adb-517a-4a2d-ae36-0b96a4def432"' +
+      ']',
     description: 'Array id participants'
   })
   @IsArray()
   teamOnePlayersIds: string[];
 
   @ApiProperty({
-    default: '6dc29adb-517a-4a2d-ae36-0b96a4def775',
+    default: '[' +
+      '"6dc29adb-517a-4a2d-ae36-0b96a4def775",' +
+      '"5yu80adb-517a-4a2d-ae36-0b96a4def432"' +
+      ']',
     description: 'Array id participants'
   })
   @IsArray()
   teamTwoPlayersIds: string[];
 
-  @ApiProperty({
-    default: false,
-    description: 'Match is completed or not'
-  })
-  @IsBoolean()
-  @IsOptional()
-  isCompleted: boolean;
 
   @ApiProperty({
-    default: false,
+    default: '2023-10-29T17:09:49.000Z',
     description: 'Match is cancelled or not'
   })
-  @IsBoolean()
-  @IsOptional()
-  isCancelled: boolean;
-
-  @ApiProperty({
-    default: false,
-    description: 'Match is cancelled or not'
-  })
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
   @IsDate()
-  @IsOptional()
   startTime: Date;
 
-  @ApiProperty({
-    default: 12,
-    description: 'Total sets won by team one'
-  })
-  @IsNumber()
-  @IsOptional()
-  setsWonByTeamOne: number;
-
-  @ApiProperty({
-    default: 8,
-    description: 'Total sets won by team two'
-  })
-  @IsNumber()
-  @IsOptional()
-  setsWonByTeamTwo: number;
-
-  @ApiProperty({
-    default: 2,
-    description: 'Total games won by team one'
-  })
-  @IsNumber()
-  @IsOptional()
-  gamesWonByTeamOne: number;
-
-  @ApiProperty({
-    default: 1,
-    description: 'Total games won by team two'
-  })
-  @IsNumber()
-  @IsOptional()
-  gamesWonByTeamTwo: number;
 }
