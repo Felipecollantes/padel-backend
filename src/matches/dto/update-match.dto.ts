@@ -1,4 +1,4 @@
-import { IsUUID, IsBoolean, IsOptional, IsArray, IsNumber, ValidateNested } from 'class-validator';
+import { IsUUID, IsBoolean, IsOptional, IsArray, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateMatchDto {

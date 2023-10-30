@@ -1,5 +1,4 @@
 import { MatchResponseDto } from '../../../matches/dto/response-match.dto';
-import { LeagueResponseDto } from '../../../league/dto/response-league.dto';
 
 export const matchCreatedResponse = {
   status: 201,

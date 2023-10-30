@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserLeague } from '../../entities/leagues_users.entity';
 import { Repository } from 'typeorm';
 import { LeagueUsersResponseDto } from '../../dto/response-league_users.dto';
-import { League } from '../../entities/league.entity';
 
 @Injectable()
 export class LeagueUserService {

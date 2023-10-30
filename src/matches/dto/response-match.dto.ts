@@ -1,7 +1,6 @@
 import { IsArray, IsBoolean, IsDate, IsNumber, IsString, IsUUID } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '../../users/entities/user.entity';
 
 
 export class PlayerDto {
