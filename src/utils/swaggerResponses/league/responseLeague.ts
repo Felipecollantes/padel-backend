@@ -20,7 +20,7 @@ export const leagueCreatedResponse = {
 
 export const leaguesResponse = {
   status: 200,
-  description: 'The league has been successfully created.',
+  description: 'The leagues list.',
   isArray: true,
   type: LeagueResponseDto,
   example: [
@@ -80,7 +80,7 @@ export const leaguesResponse = {
 };
 
 export const leagueDeleteResponse = {
-  status: 201,
+  status: 204,
   description: 'The league has been successfully deactivate.',
   type: LeagueResponseDto,
   example: {
