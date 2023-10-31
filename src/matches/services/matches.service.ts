@@ -19,7 +19,7 @@ export class MatchesService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-// ------------------- Public Methods -------------------
+  // ------------------- Public Methods -------------------
 
   /**
    * Create a new match record.
@@ -39,7 +39,7 @@ export class MatchesService {
     const matches = await this.matchRepository.find({
       relations: ['league', 'teamOnePlayers', 'teamTwoPlayers'],
     });
-    return matches.map(match => this.transformToDto(match));
+    return matches.map((match) => this.transformToDto(match));
   }
 
   /**
@@ -102,22 +102,15 @@ export class MatchesService {
     }
   }
 
-
-
-
   async findLeague(leagueId: string) {
     const league = await this.leagueRepository.findOne({
       where: { id: leagueId },
     });
-    if (!league)
-      throw new NotFoundException('Liga no encontrada');
+    if (!league) throw new NotFoundException('Liga no encontrada');
     return league;
   }
 
-  private async getTeamsPlayers(
-    teamOnePlayersIds: string[],
-    teamTwoPlayersIds: string[],
-  ) {
+  private async getTeamsPlayers(teamOnePlayersIds: string[], teamTwoPlayersIds: string[]) {
     const teamOnePlayers = await this.userRepository
       .createQueryBuilder('item')
       .where('item.id IN (:...teamOnePlayersIds)', { teamOnePlayersIds })
@@ -128,9 +121,7 @@ export class MatchesService {
       .getMany();
 
     if (!teamOnePlayers.length || !teamTwoPlayers.length) {
-      throw new NotFoundException(
-        'No se encontraron todos los jugadores para crear el partido.',
-      );
+      throw new NotFoundException('No se encontraron todos los jugadores para crear el partido.');
     }
     return {
       teamOnePlayers,
@@ -138,15 +129,8 @@ export class MatchesService {
     };
   }
 
-
-
   private async saveMatch(createMatchDto: CreateMatchDto): Promise<MatchResponseDto> {
-    const {
-      leagueId,
-      teamOnePlayersIds,
-      teamTwoPlayersIds,
-      ...matchDetails
-    } = createMatchDto;
+    const { leagueId, teamOnePlayersIds, teamTwoPlayersIds, ...matchDetails } = createMatchDto;
 
     const match = this.matchRepository.create({
       ...matchDetails,
@@ -161,12 +145,12 @@ export class MatchesService {
     match.teamTwoPlayers = teamTwoPlayers;
 
     await this.matchRepository.save(match);
-    delete match.league
+    delete match.league;
     return {
       ...match,
       teamOnePlayers: match.teamOnePlayers.map(this.mapPlayer),
       teamTwoPlayers: match.teamTwoPlayers.map(this.mapPlayer),
-      leagueId
+      leagueId,
     };
   }
 
@@ -179,21 +163,13 @@ export class MatchesService {
     }
   }
 
-
-
   private mapPlayer(user: User): PlayerDto {
     return {
       id: user.id,
       name: user.name,
-      surname: user.surname
+      surname: user.surname,
     };
   }
-
-
-
-
-
-
 
   // ------------------- Validation Methods -------------------
 
@@ -274,12 +250,12 @@ export class MatchesService {
       startTime: match.startTime,
       isCompleted: match.isCompleted,
       isCancelled: match.isCancelled,
-      teamOnePlayers: match.teamOnePlayers.map(player => this.mapPlayer(player)),
-      teamTwoPlayers: match.teamTwoPlayers.map(player => this.mapPlayer(player)),
+      teamOnePlayers: match.teamOnePlayers.map((player) => this.mapPlayer(player)),
+      teamTwoPlayers: match.teamTwoPlayers.map((player) => this.mapPlayer(player)),
       setsWonByTeamOne: match.setsWonByTeamOne,
       setsWonByTeamTwo: match.setsWonByTeamTwo,
       gamesWonByTeamOne: match.gamesWonByTeamOne,
-      gamesWonByTeamTwo: match.gamesWonByTeamTwo
+      gamesWonByTeamTwo: match.gamesWonByTeamTwo,
     };
   }
 }

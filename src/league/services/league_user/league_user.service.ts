@@ -6,12 +6,10 @@ import { LeagueUsersResponseDto } from '../../dto/response-league_users.dto';
 
 @Injectable()
 export class LeagueUserService {
-
   constructor(
     @InjectRepository(UserLeague)
-    private readonly userLeagueRepository: Repository<UserLeague>
+    private readonly userLeagueRepository: Repository<UserLeague>,
   ) {}
-
 
   async findLeaguesUsers(id: string): Promise<LeagueUsersResponseDto[]> {
     const usersLeague = await this.userLeagueRepository.find({
@@ -19,13 +17,13 @@ export class LeagueUserService {
       relations: { user: true },
     });
 
-    return this.mapAll(usersLeague)
+    return this.mapAll(usersLeague);
   }
 
   async remove(leaguesId: string, usersId: string): Promise<UserLeague> {
-    const userLeague: UserLeague = await this.userLeagueRepository.findOne(
-      { where: { usersId: usersId, leaguesId: leaguesId } }
-    );
+    const userLeague: UserLeague = await this.userLeagueRepository.findOne({
+      where: { usersId: usersId, leaguesId: leaguesId },
+    });
 
     if (!userLeague) {
       throw new NotFoundException('Participation not found');
@@ -33,7 +31,7 @@ export class LeagueUserService {
 
     userLeague.isActive = false;
     await this.userLeagueRepository.save(userLeague);
-    return userLeague
+    return userLeague;
   }
 
   mapAll(userLeague: UserLeague[]): LeagueUsersResponseDto[] {

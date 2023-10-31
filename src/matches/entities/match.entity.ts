@@ -1,12 +1,4 @@
-
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { League } from '../../league/entities/league.entity';
 import { User } from '../../users/entities/user.entity';
 

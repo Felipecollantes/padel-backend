@@ -1,15 +1,10 @@
-import {
-  IsArray,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateLeagueDto {
-
   @ApiProperty({
     description: 'The name of the league.',
-    example: 'Champions League'
+    example: 'Champions League',
   })
   @IsString({ message: 'El nombre es obligatorio.' })
   name: string;
@@ -18,7 +13,7 @@ export class CreateLeagueDto {
     description: 'List of participants in the league.',
     example: [],
     type: [String],
-    required: false
+    required: false,
   })
   @IsArray()
   @IsOptional()

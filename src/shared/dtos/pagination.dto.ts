@@ -1,12 +1,11 @@
 import { IsOptional, IsPositive, Min } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger'
-
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PaginationDto {
   @ApiProperty({
     default: 10,
-    description: 'How many users do you need?'
+    description: 'How many users do you need?',
   })
   @IsOptional()
   @IsPositive()
@@ -15,7 +14,7 @@ export class PaginationDto {
 
   @ApiProperty({
     default: 0,
-    description: 'How many users do you want to skip?'
+    description: 'How many users do you want to skip?',
   })
   @IsOptional()
   @Min(0)

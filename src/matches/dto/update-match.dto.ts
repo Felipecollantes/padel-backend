@@ -23,21 +23,15 @@ export class UpdateMatchDto {
   isCancelled: boolean;
 
   @ApiProperty({
-    default: '[' +
-      '"6dc29adb-517a-4a2d-ae36-0b96a4def775",' +
-      '"5yu80adb-517a-4a2d-ae36-0b96a4def432"' +
-      ']',
-    description: 'Array id participants'
+    default: '[' + '"6dc29adb-517a-4a2d-ae36-0b96a4def775",' + '"5yu80adb-517a-4a2d-ae36-0b96a4def432"' + ']',
+    description: 'Array id participants',
   })
   @IsArray()
   teamOnePlayersIds: string[];
 
   @ApiProperty({
-    default: '[' +
-      '"6dc29adb-517a-4a2d-ae36-0b96a4def775",' +
-      '"5yu80adb-517a-4a2d-ae36-0b96a4def432"' +
-      ']',
-    description: 'Array id participants'
+    default: '[' + '"6dc29adb-517a-4a2d-ae36-0b96a4def775",' + '"5yu80adb-517a-4a2d-ae36-0b96a4def432"' + ']',
+    description: 'Array id participants',
   })
   @IsArray()
   teamTwoPlayersIds: string[];

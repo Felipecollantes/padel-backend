@@ -28,7 +28,7 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     try {
-      const {  password, ...userDetails } = createUserDto;
+      const { password, ...userDetails } = createUserDto;
       const user = this.userRepository.create({
         ...userDetails,
         password: bcrypt.hashSync(password, 10),
@@ -52,11 +52,10 @@ export class UsersService {
     return this.userRepository.find({
       take: limit,
       skip: offset,
-      select:['id', 'email', 'name', 'surname', 'isActive', 'createdAt', 'lastLogin', 'elo', 'roles'],
+      select: ['id', 'email', 'name', 'surname', 'isActive', 'createdAt', 'lastLogin', 'elo', 'roles'],
       relations: { friendship: true },
     });
   }
-
 
   /**
    * Method that returns a user searched for by an id or by a name
@@ -67,7 +66,7 @@ export class UsersService {
     if (isUUID(param)) {
       user = await this.userRepository.findOne({
         where: { id: param },
-        select:['id', 'email', 'name', 'surname', 'isActive', 'createdAt', 'lastLogin', 'elo', 'roles'],
+        select: ['id', 'email', 'name', 'surname', 'isActive', 'createdAt', 'lastLogin', 'elo', 'roles'],
         relations: { friendship: true },
       });
     } else {
@@ -85,36 +84,25 @@ export class UsersService {
     if (isUUID(param)) {
       users = await this.userRepository.find({
         where: { id: param },
-        select:['id', 'email', 'name', 'surname', 'isActive', 'createdAt', 'lastLogin', 'elo', 'roles'],
+        select: ['id', 'email', 'name', 'surname', 'isActive', 'createdAt', 'lastLogin', 'elo', 'roles'],
         relations: { friendship: true },
       });
     } else {
       users = await this.findByName(param);
     }
 
-    if (users.length === 0)
-      throw new NotFoundException(`No users found matching ${param}`);
+    if (users.length === 0) throw new NotFoundException(`No users found matching ${param}`);
     return users;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    const {
-      password,
-      currentPassword,
-      updateActive,
-      updateElo,
-      updateRoles,
-      ...userDetails
-    } = updateUserDto;
-    const  user = await this.userRepository.findOne({
+    const { password, currentPassword, updateActive, updateElo, updateRoles, ...userDetails } = updateUserDto;
+    const user = await this.userRepository.findOne({
       where: { id: id },
       relations: { friendship: true },
     });
     if (password && currentPassword) {
-      const isCurrentPasswordValid = await bcrypt.compare(
-        currentPassword,
-        user.password,
-      );
+      const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
 
       if (!isCurrentPasswordValid) {
         throw new BadRequestException('Current password is incorrect');
@@ -149,10 +137,7 @@ export class UsersService {
         friendship: [...friend.friendship, user],
       };
 
-      await Promise.all([
-        this.update(updateUser.id, updateUser),
-        this.update(updateFriend.id, updateFriend),
-      ]);
+      await Promise.all([this.update(updateUser.id, updateUser), this.update(updateFriend.id, updateFriend)]);
       return updateUser;
     } catch (err) {
       this.handleExceptions(err);
@@ -201,7 +186,7 @@ export class UsersService {
         'user.createdAt',
         'user.lastLogin',
         'user.elo',
-        'user.roles'
+        'user.roles',
       ])
       .leftJoinAndSelect('user.friendship', 'friendship')
       .where('UPPER(user.name) ILIKE :name', {
@@ -223,7 +208,7 @@ export class UsersService {
         'user.createdAt',
         'user.lastLogin',
         'user.elo',
-        'user.roles'
+        'user.roles',
       ])
       .leftJoinAndSelect('user.friendship', 'friendship')
       .where('UPPER(user.name) ILIKE :name', {

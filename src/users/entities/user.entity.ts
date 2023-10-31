@@ -1,14 +1,6 @@
 import { Exclude, Transform } from 'class-transformer';
 import { League } from 'src/league/entities/league.entity';
-import {
-  BeforeInsert,
-  BeforeUpdate,
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Match } from '../../matches/entities/match.entity';
 
 @Entity('users')

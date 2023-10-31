@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateLeagueDto } from '../dto/create-league.dto';
 import { UpdateLeagueDto } from '../dto/update-league.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -35,29 +30,23 @@ export class LeagueService {
     const leagues = await this.leagueRepository.find({
       relations: { matches: true },
     });
-    console.log('leagues', leagues)
+    console.log('leagues', leagues);
     return Promise.all(leagues.map((league) => this.mapLeagueToDTO(league)));
   }
 
   async findOne(param: string): Promise<LeagueResponseDto> {
-    const league = isUUID(param)
-      ? await this.findLeagueById(param)
-      : await this.findLeagueByName(param);
+    const league = isUUID(param) ? await this.findLeagueById(param) : await this.findLeagueByName(param);
     if (!league) throw new NotFoundException(`League with ${param} not found`);
     return this.mapLeagueToDTO(league);
   }
 
   async findLeagues(param: string): Promise<LeagueResponseDto[]> {
     const leagues: League[] = await this.findByName(param);
-    if (leagues.length === 0)
-      throw new NotFoundException(`No leagues found matching ${param}`);
+    if (leagues.length === 0) throw new NotFoundException(`No leagues found matching ${param}`);
     return Promise.all(leagues.map((league) => this.mapLeagueToDTO(league)));
   }
 
-  async update(
-    id: string,
-    updateLeagueDto: UpdateLeagueDto,
-  ): Promise<LeagueResponseDto> {
+  async update(id: string, updateLeagueDto: UpdateLeagueDto): Promise<LeagueResponseDto> {
     const league = await this.prepareLeagueForUpdate(id, updateLeagueDto);
     await this.leagueRepository.save(league);
     return this.mapLeagueToDTO(league);
@@ -69,29 +58,19 @@ export class LeagueService {
     league.isActive = false;
     return this.leagueRepository.save(league);
   }
-  private async prepareLeagueForCreation(
-    dto: CreateLeagueDto,
-  ): Promise<League> {
+  private async prepareLeagueForCreation(dto: CreateLeagueDto): Promise<League> {
     const existingLeague = await this.leagueRepository.findOne({
       where: { name: dto.name },
     });
-    if (existingLeague)
-      throw new ConflictException('Ya existe una liga con este nombre.');
+    if (existingLeague) throw new ConflictException('Ya existe una liga con este nombre.');
 
-    const users = dto.participants
-      ? await this.getUsersByIds(dto.participants)
-      : [];
+    const users = dto.participants ? await this.getUsersByIds(dto.participants) : [];
     return this.leagueRepository.create({ ...dto, participants: users });
   }
 
-  private async prepareLeagueForUpdate(
-    id: string,
-    dto: UpdateLeagueDto,
-  ): Promise<League> {
+  private async prepareLeagueForUpdate(id: string, dto: UpdateLeagueDto): Promise<League> {
     const league = await this.findLeagueById(id);
-    const users = dto.participants
-      ? await this.getUsersByIds(dto.participants)
-      : league.participants;
+    const users = dto.participants ? await this.getUsersByIds(dto.participants) : league.participants;
     return { ...league, ...dto, participants: users };
   }
 
@@ -108,11 +87,7 @@ export class LeagueService {
     const missingIds = ids.filter((id) => !foundIds.includes(id));
 
     if (missingIds.length) {
-      throw new BadRequestException(
-        `No se encontraron usuarios para los siguientes ID: ${missingIds.join(
-          ', ',
-        )}`,
-      );
+      throw new BadRequestException(`No se encontraron usuarios para los siguientes ID: ${missingIds.join(', ')}`);
     }
     return users;
   }
@@ -130,7 +105,8 @@ export class LeagueService {
       .leftJoinAndSelect('league.participants', 'participants')
       .leftJoinAndSelect('league.matches', 'matches')
       .leftJoinAndSelect('matches.teamOnePlayers', 'teamOnePlayers')
-      .leftJoinAndSelect('matches.teamTwoPlayers', 'teamTwoPlayers')      .where('UPPER(league.name) ILIKE :name', {
+      .leftJoinAndSelect('matches.teamTwoPlayers', 'teamTwoPlayers')
+      .where('UPPER(league.name) ILIKE :name', {
         name: `%${name.toUpperCase()}%`,
       })
       .getOne();
@@ -149,13 +125,11 @@ export class LeagueService {
       points: league.points,
       createdAt: league.createdAt,
       participants: participants,
-      matches: league.matches
+      matches: league.matches,
     };
   }
 
-  private async getAndMapParticipants(
-    league: League,
-  ): Promise<LeagueUsersResponseDto[]> {
+  private async getAndMapParticipants(league: League): Promise<LeagueUsersResponseDto[]> {
     const userLeagues = await this.getUserLeaguesForLeague(league);
     return this.mapUserLeague(userLeagues);
   }

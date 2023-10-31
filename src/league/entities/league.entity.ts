@@ -1,13 +1,6 @@
 import { User } from 'src/users/entities/user.entity';
 import { Match } from '../../matches/entities/match.entity';
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('leagues')
 export class League {

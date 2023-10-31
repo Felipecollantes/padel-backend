@@ -23,12 +23,20 @@ export class LoginUserResponseDto {
   @IsBoolean()
   isActive: boolean;
 
-  @ApiProperty({ description: 'The date the user was created.', type: String, format: 'date-time' })
+  @ApiProperty({
+    description: 'The date the user was created.',
+    type: String,
+    format: 'date-time',
+  })
   @Type(() => Date)
   @IsDate()
   createdAt: Date;
 
-  @ApiProperty({ description: 'The date of the last login of the user.', type: String, format: 'date-time' })
+  @ApiProperty({
+    description: 'The date of the last login of the user.',
+    type: String,
+    format: 'date-time',
+  })
   @Type(() => Date)
   @IsDate()
   lastLogin: Date;
@@ -37,7 +45,10 @@ export class LoginUserResponseDto {
   @IsNumber()
   elo: number;
 
-  @ApiProperty({ description: 'The roles assigned to the user.', type: [String] })
+  @ApiProperty({
+    description: 'The roles assigned to the user.',
+    type: [String],
+  })
   @IsArray()
   @IsString({ each: true })
   roles: string[];
