@@ -9,6 +9,8 @@ import { isUUID } from 'class-validator';
 import { UserLeague } from '../entities/leagues_users.entity';
 import { LeagueResponseDto } from '../dto/response-league.dto';
 import { LeagueUsersResponseDto } from '../dto/response-league_users.dto';
+import { Match } from 'src/matches/entities/match.entity';
+import { MatchResponseDto, PlayerDto } from 'src/matches/dto/response-match.dto';
 
 @Injectable()
 export class LeagueService {
@@ -125,7 +127,7 @@ export class LeagueService {
       points: league.points,
       createdAt: league.createdAt,
       participants: participants,
-      matches: league.matches,
+      matches: league.matches.map((match) => this.transformToDto(match, league)),
     };
   }
 
@@ -135,10 +137,12 @@ export class LeagueService {
   }
 
   private async getUserLeaguesForLeague(league: League): Promise<UserLeague[]> {
-    return this.userLeagueRepository.find({
-      where: { leaguesId: league.id },
-      relations: { user: true },
-    });
+    return this.userLeagueRepository
+      .createQueryBuilder('userLeague')
+      .leftJoinAndSelect('userLeague.user', 'user')
+      .where('userLeague.leaguesId = :leaguesId', { leaguesId: league.id })
+      .orderBy('userLeague.points', 'DESC')
+      .getMany();
   }
 
   private mapUserLeague(userLeague: UserLeague[]): LeagueUsersResponseDto[] {
@@ -166,5 +170,34 @@ export class LeagueService {
         name: `%${param.toUpperCase()}%`,
       })
       .getMany();
+  }
+
+  /**
+   * Transforms a match entity to a response DTO.
+   * @param {Match} match - Match entity.
+   * @returns {MatchResponseDto} - Transformed match data.
+   */
+  private transformToDto(match: Match, league: League): MatchResponseDto {
+    return {
+      id: match.id,
+      leagueId: league.id,
+      startTime: match.startTime,
+      isCompleted: match.isCompleted,
+      isCancelled: match.isCancelled,
+      teamOnePlayers: match.teamOnePlayers.map((player) => this.mapPlayer(player)),
+      teamTwoPlayers: match.teamTwoPlayers.map((player) => this.mapPlayer(player)),
+      setsWonByTeamOne: match.setsWonByTeamOne,
+      setsWonByTeamTwo: match.setsWonByTeamTwo,
+      gamesWonByTeamOne: match.gamesWonByTeamOne,
+      gamesWonByTeamTwo: match.gamesWonByTeamTwo,
+    };
+  }
+
+  private mapPlayer(user: User): PlayerDto {
+    return {
+      id: user.id,
+      name: user.name,
+      surname: user.surname,
+    };
   }
 }

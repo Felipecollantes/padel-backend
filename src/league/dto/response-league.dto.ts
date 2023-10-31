@@ -2,7 +2,7 @@ import { IsArray, IsBoolean, IsDate, IsNumber, IsString, IsUUID } from 'class-va
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { LeagueUsersResponseDto } from './response-league_users.dto';
-import { Match } from '../../matches/entities/match.entity';
+import { MatchResponseDto } from 'src/matches/dto/response-match.dto';
 
 export class LeagueResponseDto {
   @ApiProperty({
@@ -82,5 +82,5 @@ export class LeagueResponseDto {
     example: [],
   })
   @IsArray()
-  matches: Match[];
+  matches: MatchResponseDto[];
 }

@@ -60,7 +60,7 @@ export class UpdateLeagueDto {
     description: 'List of id participants in the league.',
     type: [String],
     example: [],
-  }) // ajusta el tipo según corresponda
+  })
   @IsArray()
   participants: string[];
 

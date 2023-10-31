@@ -7,6 +7,7 @@ import { Match } from '../entities/match.entity';
 import { League } from 'src/league/entities/league.entity';
 import { User } from 'src/users/entities/user.entity';
 import { MatchResponseDto, PlayerDto } from '../dto/response-match.dto';
+import { UserLeague } from 'src/league/entities/leagues_users.entity';
 
 @Injectable()
 export class MatchesService {
@@ -17,6 +18,8 @@ export class MatchesService {
     private readonly matchRepository: Repository<Match>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(UserLeague)
+    private readonly userLeagueRepository: Repository<UserLeague>,
   ) {}
 
   // ------------------- Public Methods -------------------
@@ -90,6 +93,16 @@ export class MatchesService {
     }
   }
 
+  async updateMatchResult(id: string, updateMatchDto: UpdateMatchDto): Promise<MatchResponseDto> {
+    const match = await this.validateAndFindMatch(id, updateMatchDto);
+    const league = await this.findLeague(updateMatchDto.leagueId);
+    if (this.shouldUpdateMatchResult(match, updateMatchDto)) {
+      await this.updateMatchStatistics(match, league, updateMatchDto);
+    }
+
+    return this.saveUpdatedMatch(match, updateMatchDto);
+  }
+
   /**
    * Remove a match by its ID.
    * @param {string} id - Match ID.
@@ -110,6 +123,8 @@ export class MatchesService {
     return league;
   }
 
+  // ------------------- Validation Methods -------------------
+
   private async getTeamsPlayers(teamOnePlayersIds: string[], teamTwoPlayersIds: string[]) {
     const teamOnePlayers = await this.userRepository
       .createQueryBuilder('item')
@@ -127,6 +142,105 @@ export class MatchesService {
       teamOnePlayers,
       teamTwoPlayers,
     };
+  }
+
+  private async validateAndFindMatch(id: string, updateMatchDto: UpdateMatchDto): Promise<Match> {
+    await this.validateMatchDetails(updateMatchDto);
+    const match = await this.matchRepository.findOne({
+      where: { id: id },
+      relations: { league: true, teamOnePlayers: true, teamTwoPlayers: true },
+    });
+    if (!match) {
+      throw new NotFoundException(`Partido con ID ${id} no encontrado.`);
+    }
+    return match;
+  }
+
+  private shouldUpdateMatchResult(match: Match, updateMatchDto: UpdateMatchDto): boolean {
+    return updateMatchDto.isCompleted && !match.isCompleted;
+  }
+
+  private async updateMatchStatistics(match: Match, league: League, updateMatchDto: UpdateMatchDto): Promise<void> {
+    const isMatchTied = updateMatchDto.setsWonByTeamOne === updateMatchDto.setsWonByTeamTwo;
+
+    if (isMatchTied) {
+      await this.updateForTie(match, league);
+    } else {
+      await this.updateForWinOrLoss(match, league, updateMatchDto);
+    }
+  }
+
+  private async updateForTie(match: Match, league: League): Promise<void> {
+    const playersInMatch = [...match.teamOnePlayers, ...match.teamTwoPlayers];
+    league.totalMatches++;
+    await this.leagueRepository.save(league);
+    const userLeaguesUpdates = playersInMatch.map(async (player) => {
+      const userLeague = await this.userLeagueRepository.findOne({
+        where: { usersId: player.id, leaguesId: league.id },
+      });
+
+      if (userLeague) {
+        userLeague.totalMatches++;
+        userLeague.matchesTied++;
+        userLeague.points += 1;
+        await this.userLeagueRepository.save(userLeague);
+      } else {
+        throw new NotFoundException(`No se encontró el registro de liga para el jugador con ID ${player.id}`);
+      }
+    });
+
+    await Promise.all(userLeaguesUpdates);
+  }
+
+  private async updateForWinOrLoss(match: Match, league: League, updateMatchDto: UpdateMatchDto): Promise<void> {
+    const winningTeamIds =
+      updateMatchDto.setsWonByTeamOne > updateMatchDto.setsWonByTeamTwo
+        ? match.teamOnePlayers.map((player) => player.id)
+        : match.teamTwoPlayers.map((player) => player.id);
+
+    const losingTeamIds =
+      updateMatchDto.setsWonByTeamOne <= updateMatchDto.setsWonByTeamTwo
+        ? match.teamOnePlayers.map((player) => player.id)
+        : match.teamTwoPlayers.map((player) => player.id);
+
+    league.totalMatches++;
+
+    await this.updateTeamStatistics(winningTeamIds, league.id, {
+      matchesWon: 1,
+      points: 3,
+    });
+
+    await this.updateTeamStatistics(losingTeamIds, league.id, {
+      matchesLost: 1,
+      points: 0,
+    });
+  }
+
+  private async updateTeamStatistics(
+    playerIds: string[],
+    leagueId: string,
+    updates: { matchesWon?: number; matchesLost?: number; points: number },
+  ): Promise<void> {
+    await Promise.all(
+      playerIds.map(async (userId) => {
+        const userLeague = await this.userLeagueRepository.findOneOrFail({
+          where: { usersId: userId, leaguesId: leagueId },
+        });
+
+        userLeague.totalMatches++;
+        if (updates.matchesWon) userLeague.matchesWon += updates.matchesWon;
+        if (updates.matchesLost) userLeague.matchesLost += updates.matchesLost;
+        userLeague.points += updates.points;
+
+        await this.userLeagueRepository.save(userLeague);
+      }),
+    );
+  }
+
+  private async saveUpdatedMatch(match: Match, updateMatchDto: UpdateMatchDto): Promise<MatchResponseDto> {
+    Object.assign(match, updateMatchDto);
+    await this.matchRepository.save(match);
+    return this.transformToDto(match);
   }
 
   private async saveMatch(createMatchDto: CreateMatchDto): Promise<MatchResponseDto> {
@@ -170,8 +284,6 @@ export class MatchesService {
       surname: user.surname,
     };
   }
-
-  // ------------------- Validation Methods -------------------
 
   /**
    * Validates provided match details.

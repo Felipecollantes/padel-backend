@@ -68,6 +68,24 @@ export class MatchesController {
     return this.matchesService.update(id, updateMatchDto);
   }
 
+  @Patch(':id/result')
+  @ApiOperation({
+    summary: 'Update match result',
+    description: 'Update the result of a played match, such as scores and completion status',
+  })
+  @ApiResponses(matchApiResponse)
+  @ApiParam({
+    name: 'id',
+    description: 'ID of the match for which the result is being updated',
+    type: 'string',
+  })
+  updateMatchResult(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateMatchDto: UpdateMatchDto,
+  ): Promise<MatchResponseDto> {
+    return this.matchesService.updateMatchResult(id, updateMatchDto);
+  }
+
   @Delete(':id')
   @HttpCode(204)
   @ApiOperation({
