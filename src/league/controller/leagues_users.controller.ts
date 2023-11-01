@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
-import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Auth } from 'src/auth/decorators/auth/auth.decorator';
 import { ApiTags, ApiParam, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { LeagueUserService } from '../services/league_user/league_user.service';
 import { LeagueUsersResponseDto } from '../dto/response-league_users.dto';

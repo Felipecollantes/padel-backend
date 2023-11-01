@@ -4,7 +4,7 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { PaginationDto } from 'src/shared/dtos/pagination.dto';
 import { UsersService } from '../services/users.service';
 import { CreateFriendshipDto } from '../dto/create-friendship.dto';
-import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Auth } from 'src/auth/decorators/auth/auth.decorator';
 import { ValidRoles } from 'src/auth/interfaces/valid-roles.interface';
 import { ApiTags, ApiParam, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 

@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from
 import { LeagueService } from '../services/league.service';
 import { CreateLeagueDto } from '../dto/create-league.dto';
 import { UpdateLeagueDto } from '../dto/update-league.dto';
-import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Auth } from 'src/auth/decorators/auth/auth.decorator';
 import { ApiTags, ApiParam, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import {
   leagueApiResponses,
