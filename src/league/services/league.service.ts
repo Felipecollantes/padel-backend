@@ -30,9 +30,11 @@ export class LeagueService {
 
   async findAll(): Promise<LeagueResponseDto[]> {
     const leagues = await this.leagueRepository.find({
-      relations: { matches: true },
+      relations: ['matches', 'matches.teamOnePlayers', 'matches.teamTwoPlayers'],
     });
-    console.log('leagues', leagues);
+    if (leagues.length === 0) {
+      throw new NotFoundException('No se han encontrado ligas');
+    }
     return Promise.all(leagues.map((league) => this.mapLeagueToDTO(league)));
   }
 
@@ -115,6 +117,9 @@ export class LeagueService {
   }
 
   private async mapLeagueToDTO(league: League): Promise<LeagueResponseDto> {
+    if (!league.matches) {
+      throw new Error('La relación de partidos no está cargada para la liga.');
+    }
     const participants = await this.getAndMapParticipants(league);
     return {
       id: league.id,
@@ -162,6 +167,8 @@ export class LeagueService {
     return await queryBuilder
       .leftJoinAndSelect('league.participants', 'participants')
       .leftJoinAndSelect('league.matches', 'matches')
+      .leftJoinAndSelect('matches.teamOnePlayers', 'teamOnePlayers')
+      .leftJoinAndSelect('matches.teamTwoPlayers', 'teamTwoPlayers')
       .where('UPPER(league.name) ILIKE :name', {
         name: `%${param.toUpperCase()}%`,
       })
@@ -174,6 +181,9 @@ export class LeagueService {
    * @returns {MatchResponseDto} - Transformed match data.
    */
   private transformToDto(match: Match, league: League): MatchResponseDto {
+    if (!match.teamOnePlayers || !match.teamTwoPlayers) {
+      throw new Error('La relación de jugadores del equipo no está cargada para el partido.');
+    }
     return {
       id: match.id,
       leagueId: league.id,

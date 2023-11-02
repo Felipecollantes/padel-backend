@@ -16,6 +16,9 @@ export class LeagueUserService {
       where: { leaguesId: id },
       relations: { user: true },
     });
+    if (usersLeague.length === 0) {
+      throw new NotFoundException('Participantes no encontrados');
+    }
 
     return this.mapAll(usersLeague);
   }
@@ -33,19 +36,23 @@ export class LeagueUserService {
     await this.userLeagueRepository.save(userLeague);
     return userLeague;
   }
-
-  mapAll(userLeague: UserLeague[]): LeagueUsersResponseDto[] {
-    return userLeague.map((userLeague) => ({
-      usersId: userLeague.usersId,
-      totalMatches: userLeague.totalMatches,
-      matchesWon: userLeague.matchesWon,
-      matchesTied: userLeague.matchesTied,
-      matchesLost: userLeague.matchesLost,
-      points: userLeague.points,
-      email: userLeague.user.email,
-      name: userLeague.user.name,
-      surname: userLeague.user.surname,
-      isActive: userLeague.user.isActive,
-    }));
+  mapAll(userLeagues: UserLeague[]): LeagueUsersResponseDto[] {
+    return userLeagues.map((userLeague) => {
+      if (!userLeague.user) {
+        throw new Error('User information is not loaded');
+      }
+      return {
+        usersId: userLeague.usersId,
+        totalMatches: userLeague.totalMatches,
+        matchesWon: userLeague.matchesWon,
+        matchesTied: userLeague.matchesTied,
+        matchesLost: userLeague.matchesLost,
+        points: userLeague.points,
+        email: userLeague.user.email,
+        name: userLeague.user.name,
+        surname: userLeague.user.surname,
+        isActive: userLeague.isActive,
+      };
+    });
   }
 }
