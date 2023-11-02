@@ -1,4 +1,4 @@
-import { IsBoolean, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsEmail, IsInt, IsNotEmpty, IsNumber, IsString, IsUUID, Matches, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class LeagueUsersResponseDto {
@@ -6,35 +6,39 @@ export class LeagueUsersResponseDto {
     description: 'The unique ID of the user.',
     example: 'fb00f78d-a930-45b9-b810-9f12f7ea6596',
   })
-  @IsString()
+  @IsUUID('4')
   usersId: string;
 
   @ApiProperty({
     description: 'Total number of matches played by the user in the league.',
     example: 10,
   })
-  @IsNumber()
+  @IsInt({ message: 'El total de partidos debe ser un número entero.' })
+  @Min(0, { message: 'El número total de partidos no puede ser negativo.' })
   totalMatches: number;
 
   @ApiProperty({
     description: 'Number of matches won by the user in the league.',
     example: 7,
   })
-  @IsNumber()
+  @IsInt({ message: 'El número de partidos ganados debe ser un número entero.' })
+  @Min(0, { message: 'El número de partidos ganados no puede ser negativo.' })
   matchesWon: number;
 
   @ApiProperty({
     description: 'Number of matches tied by the user in the league.',
     example: 2,
   })
-  @IsNumber()
+  @IsInt({ message: 'El número de partidos empatados debe ser un número entero.' })
+  @Min(0, { message: 'El número de partidos empatados no puede ser negativo.' })
   matchesTied: number;
 
   @ApiProperty({
     description: 'Number of matches lost by the user in the league.',
     example: 1,
   })
-  @IsNumber()
+  @IsInt({ message: 'El número de partidos perdidos debe ser un número entero.' })
+  @Min(0, { message: 'El número de partidos perdidos no puede ser negativo.' })
   matchesLost: number;
 
   @ApiProperty({
@@ -48,15 +52,19 @@ export class LeagueUsersResponseDto {
     description: 'The email of the user.',
     example: 'user@example.com',
   })
-  @IsString()
+  @IsEmail({}, { message: 'El email debe ser un correo válido.' }) // Asegúrate de añadir este decorador
   email: string;
 
   @ApiProperty({ description: 'The name of the user.', example: 'John' })
   @IsString()
+  @IsNotEmpty({ message: 'El nombre no puede estar vacío.' })
+  @Matches(/^[a-zA-Z]+$/, { message: 'El nombre solo puede contener letras.' })
   name: string;
 
   @ApiProperty({ description: 'The surname of the user.', example: 'Doe' })
   @IsString()
+  @IsNotEmpty({ message: 'El apellido no puede estar vacío.' })
+  @Matches(/^[a-zA-Z]+$/, { message: 'El apellido solo puede contener letras.' })
   surname: string;
 
   @ApiProperty({

@@ -23,6 +23,7 @@ export class LeagueUserController {
   findLeaguesUsers(@Param('id', ParseUUIDPipe) id: string): Promise<LeagueUsersResponseDto[]> {
     return this.leagueUserService.findLeaguesUsers(id);
   }
+
   @Delete(':leaguesId/:usersId')
   @ApiOperation({
     summary: 'Deactivate participant',
