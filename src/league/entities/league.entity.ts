@@ -16,18 +16,6 @@ export class League {
   @Column({ default: 0 })
   totalMatches: number;
 
-  @Column({ default: 0 })
-  matchesWon: number;
-
-  @Column({ default: 0 })
-  matchesTied: number;
-
-  @Column({ default: 0 })
-  matchesLost: number;
-
-  @Column({ default: 0 })
-  points: number;
-
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
