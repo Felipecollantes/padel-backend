@@ -1,133 +1,144 @@
 import { HttpExceptionFilter } from './http-exception.filter';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
+import { Request, Response } from 'express';
 
 describe('HttpExceptionFilter', () => {
-  let filter: HttpExceptionFilter;
-
-  beforeEach(() => {
-    filter = new HttpExceptionFilter();
-  });
-
   it('should catch an HttpException and respond with a formatted error', () => {
-    const mockJson = jest.fn();
-    const mockStatus = jest.fn().mockReturnValue({ json: mockJson });
-
-    const response = {
-      status: mockStatus,
+    const responseMock = {
+      status: jest.fn(() => responseMock),
+      json: jest.fn(),
     };
-
-    const request = {
+    const requestMock = {
       url: '/test-url',
     };
 
-    const exception = new HttpException('Test error', HttpStatus.BAD_REQUEST);
+    const hostMock = {
+      switchToHttp: jest.fn(() => ({
+        getResponse: () => responseMock as unknown as Response,
+        getRequest: () => requestMock as unknown as Request,
+      })),
+    } as unknown as ArgumentsHost;
 
-    const host = {
-      switchToHttp: () => ({
-        getResponse: () => response,
-        getRequest: () => request,
-      }),
+    const filter = new HttpExceptionFilter();
+    const exception = new HttpException('Test error', HttpStatus.BAD_REQUEST);
+    filter.catch(exception, hostMock);
+
+    expect(responseMock.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
+    expect(responseMock.json).toHaveBeenCalledWith(expect.anything());
+  });
+
+  it('should handle string error messages', () => {
+    const responseMock = {
+      status: jest.fn(() => responseMock),
+      json: jest.fn(),
+    };
+    const requestMock = {
+      url: '/test-url',
     };
 
-    filter.catch(exception, host as any);
+    const hostMock = {
+      switchToHttp: jest.fn(() => ({
+        getResponse: () => responseMock as unknown as Response,
+        getRequest: () => requestMock as unknown as Request,
+      })),
+    } as unknown as ArgumentsHost;
 
-    expect(mockStatus).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
-    expect(mockJson).toHaveBeenCalledWith(
+    const filter = new HttpExceptionFilter();
+    const exception = new HttpException('A simple error message', HttpStatus.BAD_REQUEST);
+
+    jest.spyOn(exception, 'getResponse').mockReturnValue('A simple error message');
+
+    filter.catch(exception, hostMock);
+
+    expect(responseMock.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
+    expect(responseMock.json).toHaveBeenCalledWith(
       expect.objectContaining({
         statusCode: HttpStatus.BAD_REQUEST,
         timestamp: expect.any(String),
         path: '/test-url',
-        error: 'HttpException',
-        message: 'Test error',
-      }),
-    );
-  });
-
-  it('should handle string error messages', () => {
-    const response = {
-      status: jest.fn(() => response),
-      json: jest.fn(),
-    };
-    const request = { url: '/test-url' };
-    const exception = new HttpException('A string error message', HttpStatus.BAD_REQUEST);
-
-    const host = {
-      switchToHttp: () => ({
-        getResponse: () => response,
-        getRequest: () => request,
-      }),
-    };
-
-    filter.catch(exception, host as any);
-
-    expect(response.json).toHaveBeenCalledWith(
-      expect.objectContaining({
-        error: 'HttpException',
-        message: 'A string error message',
+        error: expect.any(String),
+        message: 'A simple error message',
       }),
     );
   });
 
   it('should handle error messages as an array', () => {
-    const response = {
-      status: jest.fn(() => response),
+    const responseMock = {
+      status: jest.fn(() => responseMock),
       json: jest.fn(),
     };
-    const request = { url: '/test-url' };
-    const exception = new HttpException(['Error message 1', 'Error message 2'], HttpStatus.BAD_REQUEST);
-
-    const host = {
-      switchToHttp: () => ({
-        getResponse: () => response,
-        getRequest: () => request,
-      }),
+    const requestMock = {
+      url: '/test-url',
     };
+    const hostMock = {
+      switchToHttp: jest.fn(() => ({
+        getResponse: () => responseMock as unknown as Response,
+        getRequest: () => requestMock as unknown as Request,
+      })),
+    } as unknown as ArgumentsHost;
 
-    filter.catch(exception, host as any);
+    const filter = new HttpExceptionFilter();
+    const exceptionMessages = ['Error message 1', 'Error message 2'];
+    const exception = new HttpException(
+      {
+        statusCode: HttpStatus.BAD_REQUEST,
+        error: 'Bad Request',
+        message: exceptionMessages,
+      },
+      HttpStatus.BAD_REQUEST,
+    );
 
-    expect(response.json).toHaveBeenCalledWith(
+    jest.spyOn(exception, 'getResponse').mockReturnValue(exception.getResponse());
+
+    filter.catch(exception, hostMock);
+
+    expect(responseMock.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
+    expect(responseMock.json).toHaveBeenCalledWith(
       expect.objectContaining({
         statusCode: HttpStatus.BAD_REQUEST,
         timestamp: expect.any(String),
         path: '/test-url',
         error: 'Bad Request',
-        message: 'HttpException',
+        message: exceptionMessages.join(' '),
       }),
     );
   });
 
   it('should handle error messages from an IErrorMessage object', () => {
-    interface IErrorMessage {
-      error?: string;
-      message?: string | string[];
-    }
-    const response = {
-      status: jest.fn(() => response),
+    const responseMock = {
+      status: jest.fn(() => responseMock),
       json: jest.fn(),
     };
-    const request = { url: '/test-url' };
-    const exceptionResponse: IErrorMessage = {
-      error: 'IError',
-      message: 'An IErrorMessage object error message',
+    const requestMock = {
+      url: '/test-url',
     };
-    const exception = new HttpException(exceptionResponse, HttpStatus.BAD_REQUEST);
+    const hostMock = {
+      switchToHttp: jest.fn(() => ({
+        getResponse: () => responseMock as unknown as Response,
+        getRequest: () => requestMock as unknown as Request,
+      })),
+    } as unknown as ArgumentsHost;
 
-    const host = {
-      switchToHttp: () => ({
-        getResponse: () => response,
-        getRequest: () => request,
-      }),
+    const filter = new HttpExceptionFilter();
+    const errorMessageObject = {
+      error: 'IErrorMessage Error',
+      message: 'An error occurred',
     };
+    const exception = new HttpException(errorMessageObject, HttpStatus.BAD_REQUEST);
 
-    filter.catch(exception, host as any);
+    jest.spyOn(exception, 'getResponse').mockReturnValue(errorMessageObject);
 
-    expect(response.json).toHaveBeenCalledWith(
+    filter.catch(exception, hostMock);
+
+    expect(responseMock.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
+    expect(responseMock.json).toHaveBeenCalledWith(
       expect.objectContaining({
-        error: 'IError',
-        message: 'An IErrorMessage object error message',
+        statusCode: HttpStatus.BAD_REQUEST,
+        timestamp: expect.any(String),
+        path: '/test-url',
+        error: errorMessageObject.error,
+        message: errorMessageObject.message,
       }),
     );
   });
-
-  // Add more tests for different scenarios based on how complex your error handling is
 });

@@ -1,4 +1,4 @@
-import { IsArray, IsBoolean, IsDate, IsNumber, IsString, IsUUID } from 'class-validator';
+import { IsArray, IsBoolean, IsDate, IsInt, IsNotEmpty, IsString, IsUUID, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -15,6 +15,7 @@ export class UpdateLeagueDto {
     example: 'Champions League',
   })
   @IsString()
+  @IsNotEmpty({ message: 'El nombre no puede estar vacío.' })
   name: string;
 
   @ApiProperty({
@@ -28,33 +29,9 @@ export class UpdateLeagueDto {
     description: 'Total number of matches in the league.',
     example: 10,
   })
-  @IsNumber()
+  @IsInt({ message: 'El total de partidos debe ser un número entero.' })
+  @Min(0, { message: 'El número total de partidos no puede ser negativo.' })
   totalMatches: number;
-
-  @ApiProperty({
-    description: 'Number of matches won in the league.',
-    example: 7,
-  })
-  @IsNumber()
-  matchesWon: number;
-
-  @ApiProperty({
-    description: 'Number of matches tied in the league.',
-    example: 2,
-  })
-  @IsNumber()
-  matchesTied: number;
-
-  @ApiProperty({
-    description: 'Number of matches lost in the league.',
-    example: 1,
-  })
-  @IsNumber()
-  matchesLost: number;
-
-  @ApiProperty({ description: 'Total points in the league.', example: 23 })
-  @IsNumber()
-  points: number;
 
   @ApiProperty({
     description: 'List of id participants in the league.',

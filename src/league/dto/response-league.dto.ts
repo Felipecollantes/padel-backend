@@ -35,31 +35,6 @@ export class LeagueResponseDto {
   @Min(0, { message: 'El número total de partidos no puede ser negativo.' })
   totalMatches: number;
 
-  // @ApiProperty({
-  //   description: 'Number of matches won in the league.',
-  //   example: 7,
-  // })
-  // @IsNumber()
-  // matchesWon: number;
-
-  // @ApiProperty({
-  //   description: 'Number of matches tied in the league.',
-  //   example: 2,
-  // })
-  // @IsNumber()
-  // matchesTied: number;
-
-  // @ApiProperty({
-  //   description: 'Number of matches lost in the league.',
-  //   example: 1,
-  // })
-  // @IsNumber()
-  // matchesLost: number;
-
-  // @ApiProperty({ description: 'Total points in the league.', example: 23 })
-  // @IsNumber()
-  // points: number;
-
   @ApiProperty({
     description: 'List of participants in the league.',
     type: [String],

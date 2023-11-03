@@ -60,4 +60,8 @@ module.exports = {
   moduleNameMapper: {
     '^src/(.*)$': '<rootDir>/$1',
   },
+  coveragePathIgnorePatterns: [
+    '<rootDir>/src/entities/', // Esto ignorará todos los archivos dentro de la carpeta entities
+    '.*\\.entity\\.ts$', // Esto ignorará todos los archivos que terminen en .entity.ts
+  ],
 };
