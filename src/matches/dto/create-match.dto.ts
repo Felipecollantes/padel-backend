@@ -1,4 +1,4 @@
-import { IsArray, IsDate, IsString } from 'class-validator';
+import { IsArray, IsDate, IsUUID, ValidationOptions, registerDecorator } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 
@@ -7,7 +7,7 @@ export class CreateMatchDto {
     default: '18b0618f-1bf1-4106-993c-8b23d1cd356f',
     description: 'League id',
   })
-  @IsString()
+  @IsUUID('4')
   leagueId: string;
 
   @ApiProperty({
@@ -15,6 +15,7 @@ export class CreateMatchDto {
     description: 'Array id participants',
   })
   @IsArray()
+  @IsUUID(4, { each: true })
   teamOnePlayersIds: string[];
 
   @ApiProperty({
@@ -22,6 +23,7 @@ export class CreateMatchDto {
     description: 'Array id participants',
   })
   @IsArray()
+  @IsUUID(4, { each: true })
   teamTwoPlayersIds: string[];
 
   @ApiProperty({
@@ -30,5 +32,26 @@ export class CreateMatchDto {
   })
   @Transform(({ value }) => new Date(value), { toClassOnly: true })
   @IsDate()
+  @IsFutureDate({ message: 'The start time must be in the future.' })
   startTime: Date;
+}
+
+export function IsFutureDate(validationOptions?: ValidationOptions) {
+  return function (object: any, propertyName: string) {
+    registerDecorator({
+      name: 'isFutureDate',
+      target: object.constructor,
+      propertyName: propertyName,
+      constraints: [],
+      options: validationOptions,
+      validator: {
+        validate(value: any) {
+          return typeof value === 'object' && value instanceof Date && value.getTime() > new Date().getTime();
+        },
+        defaultMessage() {
+          return 'La fecha de ser en el futuro';
+        },
+      },
+    });
+  };
 }

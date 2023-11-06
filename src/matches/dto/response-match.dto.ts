@@ -1,4 +1,14 @@
-import { IsArray, IsBoolean, IsDate, IsNumber, IsString, IsUUID } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsDate,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  IsUUID,
+  Matches,
+  MinLength,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -15,6 +25,9 @@ export class PlayerDto {
     description: 'First name of the player.',
   })
   @IsString()
+  @IsNotEmpty({ message: 'El nombre no puede estar vacío.' })
+  @MinLength(3, { message: 'El nombre debe tener al menos 3 carácteres' })
+  @Matches(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/, { message: 'El nombre solo puede contener letras.' })
   name: string;
 
   @ApiProperty({
@@ -22,6 +35,9 @@ export class PlayerDto {
     description: 'Surname of the player.',
   })
   @IsString()
+  @IsNotEmpty({ message: 'El apellido no puede estar vacío.' })
+  @MinLength(3, { message: 'El apellido debe tener al menos 3 carácteres' })
+  @Matches(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/, { message: 'El nombre solo puede contener letras.' })
   surname: string;
 }
 
@@ -30,14 +46,14 @@ export class MatchResponseDto {
     example: '371d951d-d8b0-4912-860e-74ba0be1af56',
     description: 'Unique identifier for the match.',
   })
-  @IsString()
+  @IsUUID('4')
   id: string;
 
   @ApiProperty({
     example: '18b0618f-1bf1-4106-993c-8b23d1cd356f',
     description: 'Unique identifier for the league this match belongs to.',
   })
-  @IsString()
+  @IsUUID('4')
   leagueId: string;
 
   @ApiProperty({

@@ -1,4 +1,15 @@
-import { IsBoolean, IsEmail, IsInt, IsNotEmpty, IsNumber, IsString, IsUUID, Matches, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsEmail,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  IsUUID,
+  Matches,
+  Min,
+  MinLength,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class LeagueUsersResponseDto {
@@ -58,13 +69,15 @@ export class LeagueUsersResponseDto {
   @ApiProperty({ description: 'The name of the user.', example: 'John' })
   @IsString()
   @IsNotEmpty({ message: 'El nombre no puede estar vacío.' })
-  @Matches(/^[a-zA-Z]+$/, { message: 'El nombre solo puede contener letras.' })
+  @MinLength(3, { message: 'El nombre debe tener al menos 3 carácteres' })
+  @Matches(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/, { message: 'El nombre solo puede contener letras.' })
   name: string;
 
   @ApiProperty({ description: 'The surname of the user.', example: 'Doe' })
   @IsString()
   @IsNotEmpty({ message: 'El apellido no puede estar vacío.' })
-  @Matches(/^[a-zA-Z]+$/, { message: 'El apellido solo puede contener letras.' })
+  @MinLength(3, { message: 'El apellido debe tener al menos 3 carácteres' })
+  @Matches(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/, { message: 'El apellido solo puede contener letras.' })
   surname: string;
 
   @ApiProperty({

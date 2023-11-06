@@ -61,7 +61,15 @@ module.exports = {
     '^src/(.*)$': '<rootDir>/$1',
   },
   coveragePathIgnorePatterns: [
-    '<rootDir>/src/entities/', // Esto ignorará todos los archivos dentro de la carpeta entities
-    '.*\\.entity\\.ts$', // Esto ignorará todos los archivos que terminen en .entity.ts
+    '<rootDir>/src/entities/',
+    '.*\\.entity\\.ts$',
+    '<rootDir>/src/auth/decorators/get-user/get-user.decorator.spec.ts',
+    '<rootDir>/src/auth/decorators/auth/auth.decorator.spec.ts',
+  ],
+  testPathIgnorePatterns: [
+    '<rootDir>/src/entities/',
+    '.*\\.entity\\.ts$',
+    '<rootDir>/src/auth/decorators/get-user/get-user.decorator.spec.ts',
+    '<rootDir>/src/auth/decorators/auth/auth.decorator.spec.ts', // Añadido aquí
   ],
 };

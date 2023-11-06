@@ -27,7 +27,8 @@ export class CreateUserDto {
     description: 'Name user',
   })
   @IsString()
-  @MinLength(1)
+  @MinLength(3, { message: 'El nombre debe tener al menos 3 carácteres' })
+  @Matches(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/, { message: 'El nombre solo puede contener letras.' })
   name: string;
 
   @ApiProperty({
@@ -35,6 +36,7 @@ export class CreateUserDto {
     description: 'Username user',
   })
   @IsString()
-  @MinLength(1)
+  @MinLength(3, { message: 'El apellido debe tener al menos 3 carácteres' })
+  @Matches(/^[a-zA-Z]+(\s[a-zA-Z]+)*$/, { message: 'El nombre solo puede contener letras.' })
   surname: string;
 }

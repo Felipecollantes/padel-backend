@@ -8,6 +8,7 @@ export class LoginUserResponseDto {
   id: string;
 
   @ApiProperty({ description: 'The email of the user.' })
+  @IsString()
   @IsEmail()
   email: string;
 
